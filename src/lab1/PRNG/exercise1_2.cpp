@@ -74,13 +74,13 @@ int main (int argc, char *argv[]){
 	
 	for (int i = 0; i<= N - 1; i++)
 	{
-		double SUM1 = 0.;
+		double SUM = 0.;
 		for (int j = 0; j < L; j++)
 		{
 			int k = j + i * L;
-			SUM1 += r(k);
+			SUM += (r(k) - 0.5) * (r(k) - 0.5);
 		}
-		AV1(i) = SUM1 / L;
+		AV1(i) = SUM / L;
 		AV2(i) = AV1(i) * AV1(i);
 	}
 	
@@ -102,7 +102,7 @@ int main (int argc, char *argv[]){
 	}
 	
 	for (int i = 0; i < N ; i++)
-		std::cout << x(i) << "\t" << sum_prog(i)  << "\t" << err_prog(i) << std::endl;
+		std::cout << x(i) << "\t" << sum_prog(i) - 1./12.  << "\t" << err_prog(i) << std::endl;
 
    rnd.SaveSeed();
    return 0;
