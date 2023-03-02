@@ -25,7 +25,6 @@ int main (int argc, char *argv[]){
       Primes >> p1 >> p2 ;
    } else cerr << "PROBLEM: Unable to open Primes" << endl;
    Primes.close();
-
    ifstream input("seed.in");
    string property;
    if (input.is_open()){
@@ -38,11 +37,15 @@ int main (int argc, char *argv[]){
       }
       input.close();
    } else cerr << "PROBLEM: Unable to open seed.in" << endl;
+   
+   float sum = 0;
+   int N = 1000;
 
-   for(int i=0; i<20; i++){
-      cout << rnd.Rannyu() << endl;
+   for(int i=0; i<1000; i++){
+      sum+=rnd.Rannyu();
    }
-
+   float avg = sum / (float)N;
+   std::cout << avg << std::endl;
    rnd.SaveSeed();
    return 0;
 }
