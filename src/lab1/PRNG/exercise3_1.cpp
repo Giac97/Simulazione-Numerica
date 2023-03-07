@@ -71,7 +71,7 @@ int main (int argc, char *argv[]){
     
    //Initiating variables for r: random point [0, d), theta: random angle [0: pi), cross: whether needle crosses upper or lower line
    double r;
-   double theta;
+   double sinTheta;
    bool cross;
     
    //initiating empty row vector to fill with block estimation of the value of pi
@@ -83,7 +83,8 @@ int main (int argc, char *argv[]){
        for (int j = 0; j < B; j++)
        {
             r = rnd.Rannyu(0., d);
-            theta = rnd.Rannyu(0., M_PI);
+            //double rt = rnd.Rannyu();
+            double theta = rnd.Rannyu(0., M_PI);
             cross = intersect(d, l, r, theta);
             if (cross == true)
                 N_hit += 1.;
