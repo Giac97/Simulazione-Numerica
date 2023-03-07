@@ -21,3 +21,15 @@ double error(rowvec AV1, rowvec AV2, int n)
         return sqrt((AV2(n) - AV1(n) * AV1(n)));
     }
 }
+
+bool intersect(double d, double l, double r, double theta)
+{
+    bool cross = false;
+    double y_comp = l / 2 * sin(theta);
+
+    if (d + y_comp >= d or d - y_comp <= 0)
+        cross = true;
+
+    return cross;
+
+}
