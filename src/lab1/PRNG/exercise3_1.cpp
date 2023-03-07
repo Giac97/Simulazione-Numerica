@@ -112,9 +112,9 @@ int main (int argc, char *argv[]){
         err_prog(i) = error(pi_prog, pi2_prog, i);
    }
 
-
+	vec x = regspace(0, N - 1);
    for (int i = 0; i < N; i++)
-    std::cout << pi_prog(i) << "\t" << err_prog(i) << std::endl;
+    std::cout << x(i) << "\t"<< pi_prog(i) << "\t" << err_prog(i) << std::endl;
    return 0;
 }
     
