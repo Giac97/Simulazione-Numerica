@@ -39,10 +39,9 @@ double error(rowvec AV1, rowvec AV2, int n)
 }
 
 
-
-double integrand(double x)
+double distance2(rowvec x)
 {
-    return M_PI / 2. * cos( M_PI * x / 2.);
+    return x(0) * x(0) + x(1) * x(1) + x(2) * x(2);
 }
 
 int main (int argc, char *argv[]){
@@ -77,16 +76,18 @@ int main (int argc, char *argv[]){
    //Number of blocks
    int N = 100;
 
-   //Number of throws per block
-   int L = M / N_walkers;
+   
     
-    
+   mat d2_walkers(M, N_walkers,fill::zeros);
+
+   for (int i = 0; i < N_walkers - 1; i++)
+   {
+
    mat r(M, 3, fill::zeros);
 
-   rowvec I_mc(N, fill::zeros);
-   rowvec I_mc2(N, fill::zeros);
+   colvec d2(M, fill::zeros);
 
-   for (int i = 0; i<M-1; i++)
+   for (int j = 0; j<M-1; j++)
    {
        int dx =(int) rnd.Rannyu(0.,6);
        
@@ -111,11 +112,71 @@ int main (int argc, char *argv[]){
                 mv = {0, 0, -1};
                 break;
         }
-       r.row(i+1) = r.row(i) + mv;
+       r.row(j+1) = r.row(j) + mv;
+       d2(j + 1) = distance2(r.row(j+1));
     }
-
-    r.save("walk.dat", raw_ascii);
     
+   d2_walkers.col(i) = d2;
+     
+
+
+    }   
+
+    
+   int Nb = 100;
+   int L = N_walkers / Nb;
+
+
+   mat Avg1(M, Nb, fill::zeros);
+   mat Avg2(M, Nb, fill::zeros);
+
+   for (int i = 0; i < M; i++)
+   {
+       for (int j = 0; j < Nb; j++)
+       {
+            double SUM1 = 0.;
+            for (int k = 0; k < L; k++)
+            {
+                int w = k + j * L;
+                SUM1 += d2_walkers(i, w);
+            }
+            Avg1(i, j) = SUM1 / L;
+            Avg2(i, j) = Avg1(i, j) * Avg1(i, j);
+       }
+            
+   }
+    
+   mat Avg_prog(M, Nb, fill::zeros);
+   mat Avg_prog2(M, Nb, fill::zeros);
+   mat Avg_err(M, Nb, fill::zeros);
+
+   for (int i = 0; i < M; i++)
+   {
+       for (int j = 0; j < Nb; j++)
+       {
+           for (int k = 0; k < j; k++)
+           {
+               Avg_prog(i, j) += Avg1(i, k);
+               Avg_prog2(i, j) += Avg2(i, k);
+           }
+           Avg_prog(i, j) /= float(j + 1);
+           Avg_prog2(i, j) /= float(j + 1);
+           Avg_prog(i, j) = sqrt(Avg_prog(i, j));
+           Avg_prog2(i, j) = sqrt(Avg_prog2(i, j));
+           Avg_err(i, j) = error(Avg_prog.row(i), Avg_prog2.row(i), j);
+       }
+
+   }
+   
+   colvec Avg_final = Avg_prog.col(Nb-1);
+   colvec Err_final = Avg_err.col(Nb-1);
+
+   mat out_rw(M, 2);
+   out_rw.col(0) = Avg_final;
+   out_rw.col(1) = Err_final;
+
+   out_rw.save("Sussy.dat", raw_ascii);
+   /** 
    for (int i = 0; i < N; i++)
    {
        double SUM = 0.;
@@ -127,7 +188,7 @@ int main (int argc, char *argv[]){
        I_mc(i) = SUM / L;
        I_mc2(i) = I_mc(i) * I_mc(i);
    }
-
+*/
 /**    
     
    rowvec I_prog(N, fill::zeros);
