@@ -39,7 +39,6 @@ double error(rowvec AV1, rowvec AV2, int n)
 }
 
 
-double sample_first()
 
 double integrand(double x)
 {
@@ -68,28 +67,54 @@ int main (int argc, char *argv[]){
       }
       input.close();
    } else cerr << "PROBLEM: Unable to open seed.in" << endl;
-   
-   //TOtal number of throws
-   int M = 10000;
+
+    
+   int N_walkers = 10000;
+
+   //TOtal number of steps
+   int M = 100;
 
    //Number of blocks
    int N = 100;
 
    //Number of throws per block
-   int L = M / N;
+   int L = M / N_walkers;
     
     
-   rowvec r(M, fill::zeros);
+   mat r(M, 3, fill::zeros);
 
    rowvec I_mc(N, fill::zeros);
    rowvec I_mc2(N, fill::zeros);
 
-   for (int i = 0; i<M; i++)
+   for (int i = 0; i<M-1; i++)
    {
-       double x = rnd.Rannyu();
-       r(i) = integrand(x);
-   }
+       int dx =(int) rnd.Rannyu(0.,6);
+       
+       rowvec mv(3, fill::zeros);
+       switch (dx) {
+           case 0:
+                mv = {1, 0, 0};
+                break;
+            case 1:
+                mv = {-1, 0, 0};
+                break;
+           case 2:
+                mv = {0, 1, 0};
+                break;
+            case 3:
+                mv = {0, -1, 0};
+                break;
+            case 4:
+                mv = {0, 0, 1};
+                break;
+            case 5:
+                mv = {0, 0, -1};
+                break;
+        }
+       r.row(i+1) = r.row(i) + mv;
+    }
 
+    r.save("walk.dat", raw_ascii);
     
    for (int i = 0; i < N; i++)
    {
@@ -103,7 +128,7 @@ int main (int argc, char *argv[]){
        I_mc2(i) = I_mc(i) * I_mc(i);
    }
 
-    
+/**    
     
    rowvec I_prog(N, fill::zeros);
    rowvec I_prog2(N, fill::zeros);
@@ -131,7 +156,7 @@ int main (int argc, char *argv[]){
    out.col(2) = errcol;
 
 	out.save("I_mc_uniform.dat", raw_ascii);
-
+*/
    rnd.SaveSeed();
    return 0;
 }
