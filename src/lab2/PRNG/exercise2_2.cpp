@@ -38,68 +38,74 @@ double error(rowvec AV1, rowvec AV2, int n)
     }
 }
 
-
 double distance2(rowvec x)
 {
     return x(0) * x(0) + x(1) * x(1) + x(2) * x(2);
 }
 
-int main (int argc, char *argv[]){
+int main(int argc, char *argv[])
+{
 
-   Random rnd;
-   int seed[4];
-   int p1, p2;
-   ifstream Primes("Primes");
-   if (Primes.is_open()){
-      Primes >> p1 >> p2 ;
-   } else cerr << "PROBLEM: Unable to open Primes" << endl;
-   Primes.close();
-   ifstream input("seed.in");
-   string property;
-   if (input.is_open()){
-      while ( !input.eof() ){
-         input >> property;
-         if( property == "RANDOMSEED" ){
-            input >> seed[0] >> seed[1] >> seed[2] >> seed[3];
-            rnd.SetRandom(seed,p1,p2);
-         }
-      }
-      input.close();
-   } else cerr << "PROBLEM: Unable to open seed.in" << endl;
+    Random rnd;
+    int seed[4];
+    int p1, p2;
+    ifstream Primes("Primes");
+    if (Primes.is_open())
+    {
+        Primes >> p1 >> p2;
+    }
+    else
+        cerr << "PROBLEM: Unable to open Primes" << endl;
+    Primes.close();
+    ifstream input("seed.in");
+    string property;
+    if (input.is_open())
+    {
+        while (!input.eof())
+        {
+            input >> property;
+            if (property == "RANDOMSEED")
+            {
+                input >> seed[0] >> seed[1] >> seed[2] >> seed[3];
+                rnd.SetRandom(seed, p1, p2);
+            }
+        }
+        input.close();
+    }
+    else
+        cerr << "PROBLEM: Unable to open seed.in" << endl;
 
-    
-   int N_walkers = 10000;
+    int N_walkers = 10000;
 
-   //TOtal number of steps
-   int M = 100;
+    // TOtal number of steps
+    int M = 100;
 
-   //Number of blocks
-   int N = 100;
+    // Number of blocks
+    int N = 100;
 
-   
-    
-   mat d2_walkers(M, N_walkers,fill::zeros);
+    mat d2_walkers(M, N_walkers, fill::zeros);
 
-   for (int i = 0; i < N_walkers - 1; i++)
-   {
+    for (int i = 0; i < N_walkers - 1; i++)
+    {
 
-   mat r(M, 3, fill::zeros);
+        mat r(M, 3, fill::zeros);
 
-   colvec d2(M, fill::zeros);
+        colvec d2(M, fill::zeros);
 
-   for (int j = 0; j<M-1; j++)
-   {
-       int dx =(int) rnd.Rannyu(0.,6);
-       
-       rowvec mv(3, fill::zeros);
-       switch (dx) {
-           case 0:
+        for (int j = 0; j < M - 1; j++)
+        {
+            int dx = (int)rnd.Rannyu(0., 6);
+
+            rowvec mv(3, fill::zeros);
+            switch (dx)
+            {
+            case 0:
                 mv = {1, 0, 0};
                 break;
             case 1:
                 mv = {-1, 0, 0};
                 break;
-           case 2:
+            case 2:
                 mv = {0, 1, 0};
                 break;
             case 3:
@@ -111,29 +117,24 @@ int main (int argc, char *argv[]){
             case 5:
                 mv = {0, 0, -1};
                 break;
+            }
+            r.row(j + 1) = r.row(j) + mv;
+            d2(j + 1) = distance2(r.row(j + 1));
         }
-       r.row(j+1) = r.row(j) + mv;
-       d2(j + 1) = distance2(r.row(j+1));
+
+        d2_walkers.col(i) = d2;
     }
-    
-   d2_walkers.col(i) = d2;
-     
 
+    int Nb = 100;
+    int L = N_walkers / Nb;
 
-    }   
+    mat Avg1(M, Nb, fill::zeros);
+    mat Avg2(M, Nb, fill::zeros);
 
-    
-   int Nb = 100;
-   int L = N_walkers / Nb;
-
-
-   mat Avg1(M, Nb, fill::zeros);
-   mat Avg2(M, Nb, fill::zeros);
-
-   for (int i = 0; i < M; i++)
-   {
-       for (int j = 0; j < Nb; j++)
-       {
+    for (int i = 0; i < M; i++)
+    {
+        for (int j = 0; j < Nb; j++)
+        {
             double SUM1 = 0.;
             for (int k = 0; k < L; k++)
             {
@@ -142,43 +143,41 @@ int main (int argc, char *argv[]){
             }
             Avg1(i, j) = SUM1 / L;
             Avg2(i, j) = Avg1(i, j) * Avg1(i, j);
-       }
-            
-   }
-    
-   mat Avg_prog(M, Nb, fill::zeros);
-   mat Avg_prog2(M, Nb, fill::zeros);
-   mat Avg_err(M, Nb, fill::zeros);
+        }
+    }
 
-   for (int i = 0; i < M; i++)
-   {
-       for (int j = 0; j < Nb; j++)
-       {
-           for (int k = 0; k < j; k++)
-           {
-               Avg_prog(i, j) += Avg1(i, k);
-               Avg_prog2(i, j) += Avg2(i, k);
-           }
-           Avg_prog(i, j) /= float(j + 1);
-           Avg_prog2(i, j) /= float(j + 1);
-           Avg_prog(i, j) = sqrt(Avg_prog(i, j));
-           Avg_prog2(i, j) = sqrt(Avg_prog2(i, j));
-           Avg_err(i, j) = error(Avg_prog.row(i), Avg_prog2.row(i), j);
-       }
+    mat Avg_prog(M, Nb, fill::zeros);
+    mat Avg_prog2(M, Nb, fill::zeros);
+    mat Avg_err(M, Nb, fill::zeros);
 
-   }
-   
-   colvec Avg_final = Avg_prog.col(Nb-1);
-   colvec Err_final = Avg_err.col(Nb-1);
+    for (int i = 0; i < M; i++)
+    {
+        for (int j = 0; j < Nb; j++)
+        {
+            for (int k = 0; k < j; k++)
+            {
+                Avg_prog(i, j) += Avg1(i, k);
+                Avg_prog2(i, j) += Avg2(i, k);
+            }
+            Avg_prog(i, j) /= float(j + 1);
+            Avg_prog2(i, j) /= float(j + 1);
+            Avg_prog(i, j) = sqrt(Avg_prog(i, j));
+            Avg_prog2(i, j) = sqrt(Avg_prog2(i, j));
+            Avg_err(i, j) = error(Avg_prog.row(i), Avg_prog2.row(i), j);
+        }
+    }
 
-   mat out_rw(M, 2);
-   out_rw.col(0) = Avg_final;
-   out_rw.col(1) = Err_final;
+    colvec Avg_final = Avg_prog.col(Nb - 1);
+    colvec Err_final = Avg_err.col(Nb - 1);
 
-   out_rw.save("rw_discrete_distance.dat", raw_ascii);
+    mat out_rw(M, 2);
+    out_rw.col(0) = Avg_final;
+    out_rw.col(1) = Err_final;
 
-   rnd.SaveSeed();
-   return 0;
+    out_rw.save("rw_discrete_distance.dat", raw_ascii);
+
+    rnd.SaveSeed();
+    return 0;
 }
 
 /****************************************************************
