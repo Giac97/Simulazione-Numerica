@@ -77,14 +77,16 @@ int main(int argc, char *argv[])
 
     int N_walkers = 10000;
 
-    // TOtal number of steps
+    // Total number of steps
     int M = 100;
 
     // Number of blocks
     int N = 100;
 
+    // Creating matrix containg for each walker the squared distance from the origing at each step (0 -> M)
     mat d2_walkers(M, N_walkers, fill::zeros);
 
+    // 
     for (int i = 0; i < N_walkers - 1; i++)
     {
 
@@ -92,10 +94,12 @@ int main(int argc, char *argv[])
 
         colvec d2(M, fill::zeros);
 
+        // Executing M random steps for a single walker
         for (int j = 0; j < M - 1; j++)
         {
             int dx = (int)rnd.Rannyu(0., 6);
 
+            // Row vector containg the displacement vector to move from step j to j+1
             rowvec mv(3, fill::zeros);
             switch (dx)
             {
@@ -125,12 +129,17 @@ int main(int argc, char *argv[])
         d2_walkers.col(i) = d2;
     }
 
+    // Number of blocks
     int Nb = 100;
+
+    // Number of walkers per block
     int L = N_walkers / Nb;
 
+    // Matrices where values of the averaged distance squared and its square will be stored at each step
     mat Avg1(M, Nb, fill::zeros);
     mat Avg2(M, Nb, fill::zeros);
 
+    
     for (int i = 0; i < M; i++)
     {
         for (int j = 0; j < Nb; j++)
