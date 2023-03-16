@@ -16,12 +16,33 @@ _/    _/  _/_/_/  _/_/_/_/ email: Davide.Galli@unimi.it
 
 using namespace std;
 using namespace arma;
+/**
+ * This function evaluates statistical uncertainties when using blocking given the average and the square average.
+ *
+ * @param AV1 Block average
+ * @param AV2 Square of the block average
+ * @param n Number of blocks
+ *
+ * @return error
+ */
+
+double error(rowvec AV1, rowvec AV2, int n)
+{
+    if (n == 0)
+        return 0.;
+    else
+    {
+        return sqrt((AV2(n) - AV1(n) * AV1(n)) / n);
+    }
+}
+
 
 double priceDirect(double S0, double t, double mu, double sigma, double w)
 {
     double exponent = (mu - 0.5 * sigma * sigma) * t + sigma * w;
     return S0 * exp(exponent);
 }
+
 int main (int argc, char *argv[]){
 
    Random rnd;
@@ -54,12 +75,105 @@ int main (int argc, char *argv[]){
    //Number of throws per block
    int L = M / N;
     
+   // Initial price
+   double S0 = 100.;
+
+   // Delivery time
+   double T = 1.;
+
+   //Strike price
+   double K = 100.;
    
+   // Risk free interest rate
+   double r = 0.1;
+
+   // Voltility
+   double sigma = 0.25;
+
+   rowvec ST(M, fill::zeros); 
+
+   rowvec callPrice(M, fill::zeros);
+
+   rowvec putPrice(M, fill::zeros);
+   for (int i = 0; i < M; i++)
+   {
+       double W = rnd.Gauss(0., T);
+       ST(i) = priceDirect(S0, T, r, sigma, W);
+       callPrice(i) = exp(-r * T) * max(0., ST(i) - K);
+       putPrice(i)  = exp(-r * T) * max(0., K - ST(i));
+   }
 
    
+    
+   rowvec callAv(N, fill::zeros);
+   rowvec putAv(N, fill::zeros);
+    
+   rowvec callAv2(N, fill::zeros);
+   rowvec putAv2(N, fill::zeros);
+
+   for (int i = 0; i < N; i++)
+   {
+        double sumCall = 0;
+        double sumPut = 0;
+        for (int j = 0; j < L; j++)
+        {
+            int k = j + i * L;
+            sumCall += callPrice(k);
+            sumPut += putPrice(k);
+        }
+        callAv(i) = sumCall / L;
+        callAv2(i) = callAv(i) * callAv(i);
+
+        putAv(i) = sumPut / L;
+        putAv2(i) = putAv(i) * putAv(i);
+   }
+    
+   rowvec callAvProg(N, fill::zeros);
+   rowvec callAvProg2(N, fill::zeros);
+   rowvec callErr(N, fill::zeros);
+
+   rowvec putAvProg(N, fill::zeros);
+   rowvec putAvProg2(N, fill::zeros);
+   rowvec putErr(N, fill::zeros);
+
+   for (int i = 0; i < N; i++)
+   {
+        for (int j = 0; j < i; j++)
+        {
+            callAvProg(i) += callAv(j);
+            putAvProg(i) += putAv(j);
+
+            callAvProg2(i) += callAv2(j);
+            putAvProg2(i) += putAv2(j);
+        }
+        callAvProg(i) /= float(i + 1);
+        callAvProg2(i) /= float(i + 1);
+        callErr(i) = error(callAvProg, callAvProg2, i);
+
+        putAvProg(i) /= float(i + 1);
+        putAvProg2(i) /= float(i + 1);
+        putErr(i) = error(putAvProg, putAvProg2, i);
+   }    
+
+   std::cout << "Call price at T: " << callAvProg(N - 1) << " +/- " << callErr(N - 1) << std::endl;
+   std::cout << "Put price at T: " << putAvProg(N - 1) << " +/- " << putErr(N - 1) << std::endl;
 
 
-
+   colvec callCol = callAvProg.st();
+   colvec callErrCol = callErr.st();
+   
+   colvec putCol = putAvProg.st();
+   colvec putErrCol = putErr.st();
+   vec x = regspace(0, N - 1); 
+   
+   mat out(N,5, fill::zeros);
+   out.col(0) = x;
+   out.col(1) = callCol;
+   out.col(2) = callErrCol;    
+   out.col(3) = putCol;
+   out.col(4) = putErrCol; 
+   
+   out.save("direct_pricing.dat", raw_ascii);
    rnd.SaveSeed();
    return 0;
 }
