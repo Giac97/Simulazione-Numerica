@@ -97,37 +97,51 @@ int main (int argc, char *argv[]){
    // Delta t
    double dt = T / (double) nSteps;
 
-
+	// Vector containing the final price at delivery time for each iteration
    rowvec ST(M, fill::zeros); 
-
+	
+	// Call option price for each iteration
    rowvec callPrice(M, fill::zeros);
-
+	
+	// Put option price for each iteration
    rowvec putPrice(M, fill::zeros);
+   
    for (int i = 0; i < M; i++)
    {
+   		
+   		// Vector containg price at each timestep for a single iteration "i"
         colvec S_t(nSteps, fill::zeros);
+        
+        // initialize first value to initial price (price at t = 0)
         S_t(0) = S0;
+        
+        // Sample price at each timestep up to delivery time
         for (int j = 0; j < nSteps - 1; j++)
         {
             double Z = rnd.Gauss(0. , 1.);
             S_t(j+1) = priceStep(S_t(j), dt, r, sigma, Z);
         }    
         
+        // Saving a single price "trajectory" for evaluation
         if (i == 100)
             S_t.save("price_sim.dat", raw_ascii);
+       
+       //Assigning to final price for i-th iteration the last value of the price trajectory
        ST(i) = S_t(nSteps - 1);
+       
+       // Evaluating for the single iteration the discounted call and put option price
        callPrice(i) = exp(-r * T) * max(0., ST(i) - K);
        putPrice(i)  = exp(-r * T) * max(0., K - ST(i));
    }
 
-   
-    
+   // Average ( and below square of the average) value of call and put option price inside each block    
    rowvec callAv(N, fill::zeros);
    rowvec putAv(N, fill::zeros);
     
    rowvec callAv2(N, fill::zeros);
    rowvec putAv2(N, fill::zeros);
 
+	// Evaluating the average and square of the average for each block
    for (int i = 0; i < N; i++)
    {
         double sumCall = 0;
@@ -152,7 +166,8 @@ int main (int argc, char *argv[]){
    rowvec putAvProg(N, fill::zeros);
    rowvec putAvProg2(N, fill::zeros);
    rowvec putErr(N, fill::zeros);
-
+	
+	// Block average and error is evaluated in the lop below
    for (int i = 0; i < N; i++)
    {
         for (int j = 0; j < i; j++)
@@ -171,11 +186,12 @@ int main (int argc, char *argv[]){
         putAvProg2(i) /= float(i + 1);
         putErr(i) = error(putAvProg, putAvProg2, i);
    }    
-
+	
+	// Quick output to check result
    std::cout << "Call price at T: " << callAvProg(N - 1) << " +/- " << callErr(N - 1) << std::endl;
    std::cout << "Put price at T: " << putAvProg(N - 1) << " +/- " << putErr(N - 1) << std::endl;
-
-
+	
+	// Setting up a matrix of vectors for formatted output to be analysed
    colvec callCol = callAvProg.st();
    colvec callErrCol = callErr.st();
    
