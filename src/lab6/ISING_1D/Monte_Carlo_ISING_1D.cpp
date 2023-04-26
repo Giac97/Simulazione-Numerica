@@ -22,6 +22,9 @@ int main()
   Input(); //Inizialization
   for(int iblk=1; iblk <= nblk; ++iblk) //Simulation
   {
+    int accepted = 0;
+    int attempted = 0;
+
     Reset(iblk);   //Reset block averages
     for(int istep=1; istep <= nstep; ++istep)
     {
@@ -79,6 +82,8 @@ void Input(void)
   ReadInput >> nblk;
 
   ReadInput >> nstep;
+    
+  ReadInput >> restart;
 
   if(metro==1) cout << "The program perform Metropolis moves" << endl;
   else cout << "The program perform Gibbs moves" << endl;
@@ -96,12 +101,35 @@ void Input(void)
   n_props = 4; //Number of observables
 
 //initial configuration
-  for (int i=0; i<nspin; ++i)
+    
+  if (restart == 0)
   {
-    if(rnd.Rannyu() >= 0.5) s[i] = 1;
-    else s[i] = -1;
+    for (int i=0; i<nspin; ++i)
+    {
+        if(rnd.Rannyu() >= 0.5) s[i] = 1;
+        else s[i] = -1;
+    }
   }
   
+  else if (restart == 1)
+  {
+    ifstream config;
+    config.open("config.final");
+    int s_i;
+    for(int i = 0; i < nspin; i++)
+    {
+        config >> s[i];
+    }  
+  }
+
+  else
+  {
+      for (int i = 0; i < nspin; i++)
+      {
+          s[i] = 1;
+      }
+  }
+
 //Evaluate energy etc. of the initial configuration
   Measure();
 
@@ -109,6 +137,18 @@ void Input(void)
   cout << "Initial energy = " << walker[iu]/(double)nspin << endl;
 }
 
+/**
+ * This function generates a random spin orientation of +1 or -1
+ */
+int ranSpin()
+{
+    int spin = 1;
+    if (rnd.Rannyu() > 0.5)
+    {
+        spin = -1;
+    }
+    return spin;
+}
 
 void Move(int metro)
 {
@@ -123,11 +163,45 @@ void Move(int metro)
 
     if(metro==1) //Metropolis
     {
-// INCLUDE YOUR CODE HERE
+        attempted++;
+        //Propose a new configuration by flipping the spin at index "o"
+        int s_trial = -1 * s[o];
+        
+        //Evaluate the energy at the current configuration
+        double eCurr = Boltzmann(s[o], o);
+
+        //Evaluate the energy in the trial configuration, where s[o]_trial = -s[o]
+        double eTrial = Boltzmann(s_trial, o);
+        
+        //Calculate the acceptance for the trial config
+        double A = min(1., exp(- 1. / temp * (eTrial - eCurr)));
+
+        if (A == 1.)
+        {
+            accepted++;
+            //Accept the spin flip
+            s[o] = s_trial;
+        }
+        else
+        {
+            double r = rnd.Rannyu();
+            if (r < A)
+                s[o] = s_trial;
+        }
+        
+
     }
     else //Gibbs sampling
     {
-// INCLUDE YOUR CODE HERE
+        attempted++;
+        int sNew = ranSpin();
+        double dE = Boltzmann(sNew, o);
+        double p = 1. / (1. + exp(2.* 1. / temp * dE));
+
+        if (rnd.Rannyu() < p)
+            s[o] = sNew;
+        else
+            s[o] = -sNew;
     }
   }
 }
@@ -147,10 +221,12 @@ void Measure()
   for (int i=0; i<nspin; ++i)
   {
      u += -J * s[i] * s[Pbc(i+1)] - 0.5 * h * (s[i] + s[Pbc(i+1)]);
-// INCLUDE YOUR CODE HERE
+     m += s[i];
   }
   walker[iu] = u;
-// INCLUDE YOUR CODE HERE
+  walker[im] = m;
+  walker[ix] = m * m;
+  walker[ic] = u * u;
 }
 
 
@@ -196,15 +272,60 @@ void Averages(int iblk) //Print results for current block
     cout << "Block number " << iblk << endl;
     cout << "Acceptance rate " << accepted/attempted << endl << endl;
     
-    Ene.open("output.ene.0",ios::app);
+    std::string fname = "output.ene.";
+    std::string tstring = std::to_string(temp);
+    fname += tstring;
+
+    std::string magname = "output.mag.";
+    magname += tstring;
+    
+    std::string chiname = "output.chi.";
+    chiname += tstring;
+
+    std::string heatname = "output.heat.";
+    heatname += tstring;
+
+    Ene.open(fname,ios::app);
+    Chi.open(chiname,ios::app);
+    Heat.open(heatname, ios::app);
+
     stima_u = blk_av[iu]/blk_norm/(double)nspin; //Energy
+    stima_m = blk_av[im] / blk_norm / (double)nspin;
+    stima_x = 1. / temp * blk_av[ix] / blk_norm / (double)nspin;
+    stima_c = 1. / (temp * temp) * (blk_av[ic] / blk_norm - blk_av[iu] * blk_av[iu] / (blk_norm * blk_norm)) / (double)nspin;
+
     glob_av[iu]  += stima_u;
     glob_av2[iu] += stima_u*stima_u;
+
+    
+    glob_av[im] += stima_m;
+    glob_av2[im] += stima_m * stima_m;
+    
+    glob_av[ix]  += stima_x;
+    glob_av2[ix] += stima_x*stima_x;
+    
+    glob_av[ic] += stima_c;
+    glob_av2[ic] += stima_c * stima_c;
+
+
     err_u=Error(glob_av[iu],glob_av2[iu],iblk);
+    err_m = Error(glob_av[im], glob_av2[im], iblk);
+    err_x = Error(glob_av[ix], glob_av2[ix], iblk);
+    err_c = Error(glob_av[ic], glob_av2[ic], iblk);
+
     Ene << setw(wd) << iblk <<  setw(wd) << stima_u << setw(wd) << glob_av[iu]/(double)iblk << setw(wd) << err_u << endl;
     Ene.close();
+    
+    Chi << setw(wd) << iblk <<  setw(wd) << stima_x << setw(wd) << glob_av[ix]/(double)iblk << setw(wd) << err_x << endl;
+    Chi.close();
+    Mag.open(magname, ios::app);
+    Mag <<  setw(wd) << iblk <<  setw(wd) << stima_m << setw(wd) << glob_av[im]/(double)iblk << setw(wd) << err_m << endl;
+    Mag.close();
 
-// INCLUDE YOUR CODE HERE
+    Heat <<  setw(wd) << iblk <<  setw(wd) << stima_c << setw(wd) << glob_av[ic]/(double)iblk << setw(wd) << err_c << endl;
+    Heat.close();
+    
+    // INCLUDE YOUR CODE HERE
 
     cout << "----------------------------" << endl << endl;
 }
