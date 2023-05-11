@@ -17,6 +17,14 @@ void City::initCity(int id, double x, double y)
     m_y = y;
 }
 
+/**
+ * Returns the squared distance between the city and another city using the formula d2 = dx^2 + dy^2.
+ * Mainly used in the evaluation of the cost function L^(2).
+ * 
+ * @param other Other city from which the distance squared is to be calculated
+ * 
+ * @returns dist2 The squared distance between the two cities
+*/
 double City::dist2(City other)
 {
     double dx = this->m_x - other.m_x;
@@ -28,23 +36,36 @@ double City::dist2(City other)
 
 }
 
+/**
+ * Returns the distance between the city and another city using the formula d = sqrt(dx^2 + dy^2).
+ * Mainly used in the evaluation of the cost function L^(1).
+ * 
+ * @param other Other city from which the distance is to be calculated
+ * 
+ * @returns dist The squared distance between the two cities
+*/
 double City::dist(City other)
 {
     double d2 = dist2(other);
     return sqrt(d2);
 }
 
+/**
+ * Utility function used to get the value of the private variable storing the x coordinate of the city
+ * 
+ * @returns The x coordinate of the city
+*/
 double City::getX()
 {
     return m_x;
 }
 
-Chromosome::Chromosome(int ncities, int method)
+Cities::Cities(int ncities, int method)
 {
-    initChromosome(ncities, method);
+    initCities(ncities, method);
 }
 
-void Chromosome::initChromosome(int ncities, int method)
+void Cities::initCities(int ncities, int method)
 {
 
     m_ncities = ncities;
@@ -88,7 +109,7 @@ void Chromosome::initChromosome(int ncities, int method)
     }
 }
 
-void Chromosome::printX()
+void Cities::printX()
 {
     for(int i = 0; i < m_ncities; i++)
     {
@@ -98,7 +119,7 @@ void Chromosome::printX()
     std::cout << "Cpacity : " << m_cities.capacity() << std::endl;
 }
 
-double Chromosome::length2()
+double Cities::length2()
 {
     double length2 = 0;
     for (int i = 0; i < m_ncities - 2; i++)
@@ -110,7 +131,12 @@ double Chromosome::length2()
     return length2;
 }
 
-double Chromosome::length()
+/**
+ * @brief Returns the L^(1) cost function, defined as the sum of the distance between each city in order plus the distance between the last and the first city
+ * 
+ * @return double The L^(1) cost function
+ */
+double Cities::length()
 {
     double length = 0;
     for (int i = 0; i < m_ncities - 2; i++)
@@ -121,3 +147,14 @@ double Chromosome::length()
     length += m_cities.at(m_ncities - 1).dist(m_cities.at(0));
     return length;
 }
+
+/**
+ * @brief Returns the vector of cities to be used by other functions and classes
+ * 
+ * @return std::vector<City> The vector of cities
+ */
+std::vector<City> Cities::getCities()
+{
+    return m_cities;
+}
+
