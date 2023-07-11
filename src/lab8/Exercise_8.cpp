@@ -147,41 +147,13 @@ int main()
     else
     {
         annealOutput.open("annealing.out");
-        for (int s = 0; s < 100; s++) //to be replaced with a convergence check loop
+        for (int s = 0; s < 50; s++) 
         {
             for (int i = 0; i < tSteps; i++)
             {
                 oldEnergy = progrAvgEnergy / nBlocks;
 
-                double deltaMu = rnd.Rannyu(-dMuMax, dMuMax) / beta;
-                double deltaSigma = rnd.Rannyu(-dSigmaMax, dSigmaMax) / beta;
-
-                mu += deltaMu;
-                sigma += deltaSigma;
-
-                sampleEnergy();
-                attempted++;
-                newEnergy = progrAvgEnergy / nBlocks;
-                //std::cout << newEnergy << std::endl;
-                errEnergy = Error(progrAvgEnergy/nBlocks,progrAvgEnergySq/nBlocks, (nBlocks-1));
-                deltaEnergy = newEnergy - oldEnergy;
-                double acc = std::min(1.0, exp(-deltaEnergy * beta));
-                
-                if (acc == 1.0)
-                {
-                    oldEnergy = newEnergy;
-                    accepted++;
-                }
-                else if(rnd.Rannyu() < acc)
-                {
-                    oldEnergy = newEnergy;
-                    accepted++;
-                }
-                else
-                {
-                    mu -= deltaMu;
-                    sigma -= deltaSigma;
-                }
+                variationalAttempt();
 
                 step++;
 
@@ -192,10 +164,49 @@ int main()
 
         }
 
+        
+        sampleOutput.open("sigmamu.out");
+        sampleOutput << "step" << std::setw(15) << "sigma" << std::setw(15) <<  "mu" << std::endl << std::endl;
+        double progrAvgSigma = 0;
+        double progrAvgSigma2 = 0;
+        double progrAvgMu = 0;
+        double progrAvgMu2 = 0;
+
+        for (int i = 0; i < 1000; i++)
+        {
+            oldEnergy = progrAvgEnergy / nBlocks;
+            variationalAttempt();
+            progrAvgSigma += sigma;
+            progrAvgMu += mu;
+            progrAvgSigma2 += sigma * sigma;
+            progrAvgMu2 += mu * mu;
+            sampleOutput << i << std::setw(15) << sigma << std::setw(15) << mu << std::endl;
+
+        }
+
+        sampleOutput.close();
+        progrAvgSigma /= 1000;
+        progrAvgMu /= 1000;
+        progrAvgMu2 /= 1000;
+        progrAvgSigma2 /= 1000;
+
+        errMu = Error(progrAvgMu, progrAvgMu2, 1000);
+        errSigma = Error(progrAvgSigma, progrAvgSigma2, 1000);
+
+        
+
+
+
+           
+
         //set sim anneal to false to sample energy and wavefunction close to minimum
         simAnneal = false;
         sampleEnergy();
 
+        std::cout << "\n #=================================# \n" << std::endl;
+        std::cout << "sigma = \t" << progrAvgSigma << " +/- " << errSigma << std::endl;
+        std::cout << "mu = \t" << progrAvgMu << " +/- " << errMu << std::endl;
+        std::cout << "! <H> = \t" << oldEnergy << " +/- " << errEnergy << std::endl;
     }
     annealOutput.close();
 
@@ -303,4 +314,37 @@ double Error(double avg1, double avg2, int n)
    else{
       return sqrt((avg2-avg1*avg1)/n);
    }
+}
+
+void variationalAttempt()
+{
+    deltaMu = rnd.Rannyu(-dMuMax, dMuMax) / beta;
+    deltaSigma = rnd.Rannyu(-dSigmaMax, dSigmaMax) / beta;
+
+    mu += deltaMu;
+    sigma += deltaSigma;
+
+    sampleEnergy();
+    attempted++;
+    newEnergy = progrAvgEnergy / nBlocks;
+    //std::cout << newEnergy << std::endl;
+    errEnergy = Error(progrAvgEnergy/nBlocks,progrAvgEnergySq/nBlocks, (nBlocks-1));
+    deltaEnergy = newEnergy - oldEnergy;
+    double acc = std::min(1.0, exp(-deltaEnergy * beta));
+    
+    if (acc == 1.0)
+    {
+        oldEnergy = newEnergy;
+        accepted++;
+    }
+    else if(rnd.Rannyu() < acc)
+    {
+        oldEnergy = newEnergy;
+        accepted++;
+    }
+    else
+    {
+        mu -= deltaMu;
+        sigma -= deltaSigma;
+    }
 }

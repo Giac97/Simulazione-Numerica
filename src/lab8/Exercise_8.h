@@ -24,8 +24,12 @@ double beta = 1.0;
 double deltaBeta = 0.05;
 double mu;
 double sigma;
+double deltaMu;
+double deltaSigma;
 double dMuMax = 1;
 double dSigmaMax = 1;
+double errMu;
+double errSigma;
 double x0;
 
 double Energy;
@@ -44,6 +48,7 @@ double progrAvgEnergySq;
 std::ofstream outEnergy;
 std::ofstream outPosition;
 std::ofstream annealOutput;
+std::ofstream sampleOutput;
 
 // Functions
 double waveFunction(double x, double sigma, double mu);
@@ -53,5 +58,6 @@ double Potential(double x);
 bool Accept(double xOld, double xNew, double sigma, double mu);
 void Init(void);
 void sampleEnergy();
+void variationalAttempt();
 double Error(double avg1, double avg2, int n);
 #endif 
