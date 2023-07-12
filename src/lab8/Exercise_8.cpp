@@ -24,8 +24,8 @@ void Init(void)
     rnd.SetRandom(seed,p1,p2);
     Seed.close();
 
-
-    std::cout << "#===============ilBeca==================#" << std::endl;
+    std::cout << std::endl;
+    std::cout << "#=================ilBeca==================#" << std::endl;
     std::cout << "#                       ____              #" << std::endl;
     std::cout << "#                     ,'  , `.  ,----..   #" << std::endl;
     std::cout << "#        ,---.     ,-+-,.' _ | /   /   \\  #" << std::endl;
@@ -36,12 +36,13 @@ void Init(void)
     std::cout << "#  \\   \\  \\: |'   | :  | :  |,|   : |     #" << std::endl;
     std::cout << "#   ;   \\  ' .;   . |  ; |--' .   | '___  #" << std::endl;
     std::cout << "#    \\   \\   '|   : |  | ,    '   ; : .'| #" << std::endl;
-    std::cout << "#     \\   `  ;|   : '  |/     '   | '/  :# " << std::endl;
+    std::cout << "#     \\   `  ;|   : '  |/     '   | '/  : # " << std::endl;
     std::cout << "#      :   \\ |;   | |`-'      |   :    /  #" << std::endl;
     std::cout << "#       '---\" |   ;/           \\   \\ .'   #" << std::endl;
     std::cout << "#             '---'             `---`     #" << std::endl;
     std::cout << "#                                         #" << std::endl;
-    std::cout << "#======================================#" << std::endl;
+    std::cout << "#=========================================#" << std::endl;
+    std::cout << std::endl << std::endl;
 }
 
 
@@ -404,7 +405,7 @@ void variationalAttempt()
 
     mu += deltaMu;
     sigma += deltaSigma;
-    
+
     sampleEnergy();
     attempted++;
     newEnergy = progrAvgEnergy / nBlocks;
