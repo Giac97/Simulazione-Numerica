@@ -1,0 +1,15 @@
+50
+500
+0.01
+2
+10
+
+
+
+
+
+    inputFile >> NUM_CITIES;
+    inputFile >> NUM_GENERATIONS;
+    inputFile >> MUTATION_RATE;
+    inputFile >> CITY_GEN;
+    inputFile >> EVERY;
