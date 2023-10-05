@@ -15,7 +15,7 @@ int NUM_GENERATIONS;
 double MUTATION_RATE;
 int CITY_GEN;
 int EVERY;
-int POPULATION_SIZE = 200;
+int POPULATION_SIZE = 500;
 void readInput(std::string fName)
 {
 
@@ -72,11 +72,15 @@ void Population::evolve(const std::vector<City>& cities, std::ofstream& outputFi
     std::vector<std::vector<int>> newPopulation(populationSize_);
 
     for (int i = 0; i < populationSize_; ++i) {
+        if (rnd.Rannyu() > 0.5){
         std::vector<int> parent1 = tournamentSelection(cities);
         std::vector<int> parent2 = tournamentSelection(cities);
         std::vector<int> offspring = crossover(parent1, parent2);
         mutate(offspring);
         newPopulation[i] = offspring;
+        }
+        else
+            newPopulation[i] = population_[i];
     }
 
     population_ = newPopulation;
