@@ -177,12 +177,37 @@ std::vector<int> Population::crossover(const std::vector<int>& parent1, const st
 }
 
 void Population::mutate(std::vector<int>& path) {
-    for (int i = 1; i < path.size() - 1; ++i) {  // Exclude the first city
-        if (rnd.Rannyu() < MUTATION_RATE) {
-            int j = rand() % (path.size() - 1) + 1;  // Exclude the first city
+
+    if (rnd.Rannyu() < MUTATION_RATE)
+    {
+        double r = rnd.Rannyu();
+
+        //perform a standard swap of two cities at index i, j
+        if (r < 0.5)
+        {
+            int j = rand() % (path.size() - 1) + 1;
+            int i = rand() % (path.size() - 1) + 1;
             std::swap(path[i], path[j]);
         }
+
+        //invert between index i and j
+
+        if (r < 1 && r > 0.5)
+        {
+            int j = rand() % (path.size() - 1) + 1;
+            int i = rand() % (path.size() - 1) + 1;
+            if (j < i)
+                std::swap(i, j);
+            
+            int len = j - 1;
+
+            std::reverse(path.begin() + 1, path.begin() + j);
+
+        }
+
+
     }
+
 }
 
 std::vector<int> Population::tournamentSelection(const std::vector<City>& cities) {
