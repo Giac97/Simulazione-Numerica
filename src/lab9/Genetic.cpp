@@ -205,7 +205,14 @@ std::vector<int> Population::tournamentSelection(const std::vector<City>& cities
     return bestPath;
 }
 
-
+/**
+ * @brief Method that generates the list of cities according to the specification in the input file 
+ * 
+ * 
+ * @param Method an integer specifying the method used to generate cities: 1 -> Generates cities randomly distributed on a circle. 2 -> Generate cities randomly distributed inside a square. 3 -> Read the coordinates of the cities from a txt file
+ *  
+ * @return std::vector<City> 
+ */
 std::vector<City> cityGeneration(int Method)
 {
     std::vector<City> cities;
@@ -229,6 +236,24 @@ std::vector<City> cityGeneration(int Method)
             double x = rnd.Rannyu(-L, L);
             double y = rnd.Rannyu(-L, L);
             cities.push_back({ x, y });
+        }
+        cities[cities.size() - 1] = cities[0];
+
+    }
+
+    else if (Method == 3)
+    {
+        std::ifstream cityFile;
+        cityFile.open("American_capitals.dat");
+        double x, y;
+        std::string state, name;
+        cityFile >> state >> state >> state >> state; //reads the first line
+        for (int i = 0; i < NUM_CITIES; i++)
+        {
+            
+            cityFile >> state >> name >> x >> y;
+            std::cout << state << " " << name<< " " << x<< " " << y  << std::endl;
+            cities.push_back({x, y});
         }
         cities[cities.size() - 1] = cities[0];
 
