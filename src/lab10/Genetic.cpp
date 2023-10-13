@@ -289,7 +289,11 @@ void Population::setBest(std::vector<int> newBest)
  */
 void Population::writeBestLengthMPI(int rank, const std::vector<City> &cities)
 {
-    std::string fname = "./out/distance_"+std::to_string(rank)+".out";
+    std::string fname;
+    if (CITY_GEN == 4)
+        fname = "./out_ita/distance_"+std::to_string(rank)+".out";
+    else
+        fname = "./out/distance_"+std::to_string(rank)+".out";
     double bestDistance = calculatePathDistance(getBestPath(), cities);
     std::ofstream distanceMP;
     distanceMP.open(fname, std::ios_base::app);
@@ -309,7 +313,11 @@ void Population::writeBestLengthMPI(int rank, const std::vector<City> &cities)
 void Population::writeBestPathMPI(int rank,const std::vector<City> &cities, int generation)
 {
     std::ofstream pathMP;
-    std::string fname = "./out/path/path_"+std::to_string(rank)+".out";
+    std::string fname;
+    if (CITY_GEN == 4)
+        fname = "./out_ita/path/path_"+std::to_string(rank)+".out";
+    else
+        fname = "./out/path/path_"+std::to_string(rank)+".out";
     double bestDistance = calculatePathDistance(getBestPath(), cities);
     pathMP.open(fname, std::ios_base::app);
     pathMP << "Generation " << generation << std::endl;
@@ -375,6 +383,21 @@ std::vector<City> cityGeneration(int Method)
         }
         cities[cities.size() - 1] = cities[0];
 
+    }
+
+    else if (Method == 4)
+    {
+        std::ifstream cityFile;
+        cityFile.open("capoluoghi.txt");
+        double x, y;
+        for (int i = 0; i < NUM_CITIES; i++)
+        {
+            
+            cityFile >> x >> y;
+            //std::cout << state << " " << name<< " " << x<< " " << y  << std::endl;
+            cities.push_back({x, y});
+        }
+        cities[cities.size() - 1] = cities[0];
     }
     return cities;
 }
