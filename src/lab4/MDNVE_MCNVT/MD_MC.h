@@ -18,14 +18,14 @@ Random rnd;
 
 //parameters, observables
 const int m_props=1000;
-int n_props, iv, ik, it, ie, iw;
+int n_props, iv, ik, it, ie, iw, ip;
 double vtail, ptail, bin_size, nbins, sd;
 double walker[m_props];
 
 // averages
 double blk_av[m_props], blk_norm, accepted, attempted;
 double glob_av[m_props], glob_av2[m_props];
-double stima_pot, stima_pres, stima_kin, stima_etot, stima_temp;
+double stima_pot, stima_pres, stima_kin, stima_etot, stima_temp, stima_press;
 double err_pot, err_press, err_kin, err_etot, err_temp, err_gdir;
 
 //configuration

@@ -29,7 +29,7 @@ int main()
       Move();
       Measure();
       Accumulate(); //Update block averages
-      if(istep%10 == 0){
+      if(istep%500 == 0){
 //        ConfXYZ(nconf);//Write actual configuration in XYZ format //Commented to avoid "filesystem full"! 
         nconf += 1;
       }
@@ -104,7 +104,9 @@ void Input(void)
   it = 1; //Temperature
   ik = 2; //Kinetic energy
   ie = 3; //Total energy
-  n_props = 4; //Number of observables
+  ip = 4;  
+
+  n_props = 5; //Number of observables
 
 //Read initial configuration
   cout << "Read initial configuration" << endl << endl;
@@ -121,8 +123,6 @@ void Input(void)
     double sumv[3] = {0.0, 0.0, 0.0};
     for (int i=0; i<npart; ++i)
     {
-      vx[i] = rnd.Gauss(0.,sqrt(temp));
-      vy[i] = rnd.Gauss(0.,sqrt(temp));
       vz[i] = rnd.Gauss(0.,sqrt(temp));
       sumv[0] += vx[i];
       sumv[1] += vy[i];
@@ -383,7 +383,7 @@ void Accumulate(void) //Update block averages
 void Averages(int iblk) //Print results for current block
 {
     
-   ofstream Epot, Ekin, Etot, Temp;
+   ofstream Epot, Ekin, Etot, Temp, Press;
    const int wd=12;
     
     cout << "Block number " << iblk << endl;
@@ -393,6 +393,7 @@ void Averages(int iblk) //Print results for current block
     Ekin.open("output_ekin.dat",ios::app);
     Temp.open("output_temp.dat",ios::app);
     Etot.open("output_etot.dat",ios::app);
+    Press.open("output_press.dat",ios::app);
     
     stima_pot = blk_av[iv]/blk_norm/(double)npart; //Potential energy
     glob_av[iv] += stima_pot;
@@ -421,7 +422,27 @@ void Averages(int iblk) //Print results for current block
 //Total energy
     Etot << setw(wd) << iblk <<  setw(wd) << stima_etot << setw(wd) << glob_av[ie]/(double)iblk << setw(wd) << err_etot << endl;
 //Temperature
+    glob_av2[it] += stima_temp*stima_temp;
+    err_temp=Error(glob_av[it],glob_av2[it],iblk);
+    
+    stima_press = blk_av[ip] / blk_norm;
+    glob_av[ip] += stima_press;
+    glob_av2[ip] += stima_press * stima_press;
+    err_press = Error(glob_av[ip], glob_av2[ip], iblk);
+
+
+
+
+//Potential energy per particle
+    Epot << setw(wd) << iblk <<  setw(wd) << stima_pot << setw(wd) << glob_av[iv]/(double)iblk << setw(wd) << err_pot << endl;
+//Kinetic energy
+    Ekin << setw(wd) << iblk <<  setw(wd) << stima_kin << setw(wd) << glob_av[ik]/(double)iblk << setw(wd) << err_kin << endl;
+//Total energy
+    Etot << setw(wd) << iblk <<  setw(wd) << stima_etot << setw(wd) << glob_av[ie]/(double)iblk << setw(wd) << err_etot << endl;
+//Temperature
     Temp << setw(wd) << iblk <<  setw(wd) << stima_temp << setw(wd) << glob_av[it]/(double)iblk << setw(wd) << err_temp << endl;
+//Pressure
+    Press << setw(wd) << iblk <<  setw(wd) << stima_press << setw(wd) << glob_av[ip]/(double)iblk << setw(wd) << err_press << endl;
 
     cout << "----------------------------" << endl << endl;
 
@@ -429,6 +450,7 @@ void Averages(int iblk) //Print results for current block
     Ekin.close();
     Etot.close();
     Temp.close();
+    Press.close();
 }
 
 
@@ -480,4 +502,4 @@ double Error(double sum, double sum2, int iblk)
  _/    _/       _/ _/       Prof. D.E. Galli
 _/    _/  _/_/_/  _/_/_/_/ email: Davide.Galli@unimi.it
 *****************************************************************
-*****************************************************************/
+*************:wq****************************************************/
