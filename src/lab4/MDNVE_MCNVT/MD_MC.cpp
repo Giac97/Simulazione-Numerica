@@ -302,6 +302,7 @@ double Force(int ip, int idir){ //Compute forces as -Grad_ip V(r)
 
       if(dr < rcut){
         f += dvec[idir] * (48.0/pow(dr,14) - 24.0/pow(dr,8)); // -Grad_ip V(r)
+        
       }
     }
   }
@@ -332,19 +333,20 @@ void Measure() //Properties measurement
       {
         vij = 1.0/pow(dr,12) - 1.0/pow(dr,6);
         v += vij;
+        press += 48.0/pow(dr,12) - 24.0/pow(dr,6);
       }
     }          
   }
-  press *= 48. / (3. * npart / rho);
-  press += 16. / 3. * M_PI * rho * (2. / 3. * 1. / pow( rcut, 9 ) - 1. / pow( rcut, 3 ) );  
-
+  //press *= 48. / (3. * npart / rho);
+  //press += 16. / 3. * M_PI * rho * (2. / 3. * 1. / pow( rcut, 9 ) - 1. / pow( rcut, 3 ) );  
+  press = rho*walker[it]+press/(3.0*vol);
   for (int i=0; i<npart; ++i) kin += 0.5 * (vx[i]*vx[i] + vy[i]*vy[i] + vz[i]*vz[i]);
 
   walker[iv] = 4.0 * v; // Potential energy
   walker[ik] = kin; // Kinetic energy
   walker[it] = (2.0 / 3.0) * kin/(double)npart; // Temperature
   walker[ie] = 4.0 * v + kin;  // Total energy;
-  walker[ip] = walker[it] * rho + press; 
+  walker[ip] = press; 
   return;
 }
 
@@ -419,9 +421,6 @@ void Averages(int iblk) //Print results for current block
 
 
 
-//Temperature
-    glob_av2[it] += stima_temp*stima_temp;
-    err_temp=Error(glob_av[it],glob_av2[it],iblk);
     
     stima_press = blk_av[ip] / blk_norm;
     glob_av[ip] += stima_press;
