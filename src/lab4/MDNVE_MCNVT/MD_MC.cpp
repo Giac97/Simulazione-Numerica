@@ -30,7 +30,7 @@ int main()
       Measure();
       Accumulate(); //Update block averages
       if(istep%500 == 0){
-//        ConfXYZ(nconf);//Write actual configuration in XYZ format //Commented to avoid "filesystem full"! 
+        ConfXYZ(nconf);//Write actual configuration in XYZ format //Commented to avoid "filesystem full"! 
         nconf += 1;
       }
     }
@@ -418,12 +418,7 @@ void Averages(int iblk) //Print results for current block
     err_temp=Error(glob_av[it],glob_av2[it],iblk);
 
 
-//Potential energy per particle
-    Epot << setw(wd) << iblk <<  setw(wd) << stima_pot << setw(wd) << glob_av[iv]/(double)iblk << setw(wd) << err_pot << endl;
-//Kinetic energy
-    Ekin << setw(wd) << iblk <<  setw(wd) << stima_kin << setw(wd) << glob_av[ik]/(double)iblk << setw(wd) << err_kin << endl;
-//Total energy
-    Etot << setw(wd) << iblk <<  setw(wd) << stima_etot << setw(wd) << glob_av[ie]/(double)iblk << setw(wd) << err_etot << endl;
+
 //Temperature
     glob_av2[it] += stima_temp*stima_temp;
     err_temp=Error(glob_av[it],glob_av2[it],iblk);
