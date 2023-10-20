@@ -335,6 +335,8 @@ void Measure() //Properties measurement
       }
     }          
   }
+  press *= 48. / (3. * npart / rho);
+  press += 16. / 3. * M_PI * rho * (2. / 3. * 1. / pow( rcut, 9 ) - 1. / pow( rcut, 3 ) );  
 
   for (int i=0; i<npart; ++i) kin += 0.5 * (vx[i]*vx[i] + vy[i]*vy[i] + vz[i]*vz[i]);
 
@@ -342,7 +344,7 @@ void Measure() //Properties measurement
   walker[ik] = kin; // Kinetic energy
   walker[it] = (2.0 / 3.0) * kin/(double)npart; // Temperature
   walker[ie] = 4.0 * v + kin;  // Total energy;
-
+  walker[ip] = walker[it] * rho + press; 
   return;
 }
 
@@ -414,6 +416,7 @@ void Averages(int iblk) //Print results for current block
     glob_av[it] += stima_temp;
     glob_av2[it] += stima_temp*stima_temp;
     err_temp=Error(glob_av[it],glob_av2[it],iblk);
+
 
 //Potential energy per particle
     Epot << setw(wd) << iblk <<  setw(wd) << stima_pot << setw(wd) << glob_av[iv]/(double)iblk << setw(wd) << err_pot << endl;

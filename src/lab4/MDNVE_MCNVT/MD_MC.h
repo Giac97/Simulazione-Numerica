@@ -36,7 +36,7 @@ double vx[m_part],  vy[m_part],   vz[m_part];
 
 // thermodynamical state
 int npart;
-double beta,temp,energy,vol,rho,box,rcut;
+double beta,temp,energy,vol,rho,box,rcut, press;
 
 // simulation
 int iNVET, nstep, nblk, restart;
