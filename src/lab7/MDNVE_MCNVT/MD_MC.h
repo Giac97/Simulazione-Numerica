@@ -13,8 +13,6 @@ _/    _/  _/_/_/  _/_/_/_/ email: Davide.Galli@unimi.it
 
 //Random numbers
 #include "random.h"
-#include <armadillo>
-using namespace arma;
 int seed[4];
 Random rnd;
 
@@ -22,14 +20,14 @@ Random rnd;
 const int m_props=1000;
 int n_props, n,iv, ik, it, ie, iw, ip, ig;
 double vtail, ptail, bin_size, sd;
-const int nbins = 100;
+const int nbins = 200;
 double walker[m_props], gdr[nbins], gdr_ave[nbins];
 
 
 // averages
 double blk_av[m_props], blk_norm, accepted, attempted;
 double glob_av[m_props], glob_av2[m_props];
-double stima_pot, stima_press, stima_kin, stima_etot, stima_temp;
+double stima_pot, stima_pres, stima_kin, stima_etot, stima_temp, stima_press;
 double err_pot, err_press, err_kin, err_etot, err_temp, err_gdir;
 
 //configuration
@@ -40,7 +38,7 @@ double vx[m_part],  vy[m_part],   vz[m_part];
 
 // thermodynamical state
 int npart;
-double beta,temp,energy,vol,rho,box,rcut;
+double beta,temp,energy,vol,rho,box,rcut, press;
 
 // simulation
 int iNVET, nstep, nblk, restart;

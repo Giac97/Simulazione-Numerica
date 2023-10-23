@@ -14,8 +14,7 @@ _/    _/  _/_/_/  _/_/_/_/ email: Davide.Galli@unimi.it
 #include <cmath>
 #include <iomanip>
 #include "MD_MC.h"
-#include <armadillo>
-using namespace arma;
+
 using namespace std;
 
 int main()
@@ -31,7 +30,7 @@ int main()
       Measure();
       Accumulate(); //Update block averages
       if(istep%500 == 0){
-//        ConfXYZ(nconf);//Write actual configuration in XYZ format //Commented to avoid "filesystem full"! 
+        ConfXYZ(nconf);//Write actual configuration in XYZ format //Commented to avoid "filesystem full"! 
         nconf += 1;
       }
     }
@@ -124,8 +123,6 @@ void Input(void)
     double sumv[3] = {0.0, 0.0, 0.0};
     for (int i=0; i<npart; ++i)
     {
-      vx[i] = rnd.Gauss(0.,sqrt(temp));
-      vy[i] = rnd.Gauss(0.,sqrt(temp));
       vz[i] = rnd.Gauss(0.,sqrt(temp));
       sumv[0] += vx[i];
       sumv[1] += vy[i];
@@ -284,8 +281,10 @@ double Boltzmann(double xx, double yy, double zz, int ip)
       {
         ene += 1.0/pow(dr,12) - 1.0/pow(dr,6);
       }
+      
     }
   }
+  
 
   return 4.0*ene;
 }
@@ -305,6 +304,7 @@ double Force(int ip, int idir){ //Compute forces as -Grad_ip V(r)
 
       if(dr < rcut){
         f += dvec[idir] * (48.0/pow(dr,14) - 24.0/pow(dr,8)); // -Grad_ip V(r)
+        
       }
     }
   }
@@ -317,10 +317,8 @@ void Measure() //Properties measurement
   double v = 0.0, kin=0.0;
   double vij;
   double dx, dy, dz, dr;
-  double press = 0.; 
   double halfBox = box / 2.;
-    
-    
+
 //cycle over pairs of particles
   for (int i=0; i<npart-1; ++i)
   {
@@ -333,38 +331,31 @@ void Measure() //Properties measurement
 
       dr = dx*dx + dy*dy + dz*dz;
       dr = sqrt(dr);
-      
       if (dr < halfBox)
       {
         n = rint(dr * nbins /halfBox);
         gdr[n] += 2;
       }
-      
-        
-      press += 1.0 / pow(dr, 12) - 0.5 / pow(dr, 6);
       if(dr < rcut)
       {
         vij = 1.0/pow(dr,12) - 1.0/pow(dr,6);
         v += vij;
+        press += 48.0/pow(dr,12) - 24.0/pow(dr,6);
       }
     }          
   }
+  v += 8. * M_PI * rho / (9. * pow(rcut, 9)) - 8. * M_PI * rho / (3. * pow(rcut, 3));
+  //press *= 48. / (3. * npart / rho);
+  //press += 16. / 3. * M_PI * rho * (2. / 3. * 1. / pow( rcut, 9 ) - 1. / pow( rcut, 3 ) );  
+  press = rho*walker[it]+press/(3.0*vol);
+  
+  for (int i=0; i<npart; ++i) kin += 0.5 * (vx[i]*vx[i] + vy[i]*vy[i] + vz[i]*vz[i]);
 
-  v +=  (8. * M_PI * rho / ( 3 * pow(rcut, 3) ) ) * ( 1. / (3. * pow(rcut, 3)) - 1);
-    
-  press *= 48. / (3. * npart / rho);
-
-  press += 16. / 3. * M_PI * rho * (2. / 3. * 1. / pow( rcut, 9 ) - 1. / pow( rcut, 3 ) );  
-
-  for (int i=0; i<npart; ++i) 
-  {
-      kin += 0.5 * (vx[i]*vx[i] + vy[i]*vy[i] + vz[i]*vz[i]);
-  }
+  walker[iv] = 4.0 * v; // Potential energy
   walker[ik] = kin; // Kinetic energy
   walker[it] = (2.0 / 3.0) * kin/(double)npart; // Temperature
   walker[ie] = 4.0 * v + kin;  // Total energy;
-  walker[ip] = walker[it] * rho + press;  
-
+  walker[ip] = press; 
   return;
 }
 
@@ -393,7 +384,6 @@ void Reset(int iblk) //Reset block averages
    blk_norm = 0;
    attempted = 0;
    accepted = 0;
-    
    for (int i = 0; i < nbins; i++)
    {
        gdr[i] = 0.;
@@ -423,18 +413,18 @@ void Averages(int iblk) //Print results for current block
 {
     
    ofstream Epot, Ekin, Etot, Temp, Press, GDR;
-   const int wd=16;
+   const int wd=12;
     
     cout << "Block number " << iblk << endl;
     cout << "Acceptance rate " << accepted/attempted << endl << endl;
-    
+    std::string gdr_fname = "gdr/output_gdr_"+std::to_string(iblk)+".dat";
     Epot.open("output_epot.dat",ios::app);
     Ekin.open("output_ekin.dat",ios::app);
     Temp.open("output_temp.dat",ios::app);
     Etot.open("output_etot.dat",ios::app);
-    Press.open("output_press.dat", ios::app);
-	 GDR.open("output_gdr.dat", ios::app);	
-		
+    Press.open("output_press.dat",ios::app);
+    GDR.open(gdr_fname, ios::app);
+    
     stima_pot = blk_av[iv]/blk_norm/(double)npart; //Potential energy
     glob_av[iv] += stima_pot;
     glob_av2[iv] += stima_pot*stima_pot;
@@ -454,6 +444,9 @@ void Averages(int iblk) //Print results for current block
     glob_av[it] += stima_temp;
     glob_av2[it] += stima_temp*stima_temp;
     err_temp=Error(glob_av[it],glob_av2[it],iblk);
+
+
+
     
     stima_press = blk_av[ip] / blk_norm;
     glob_av[ip] += stima_press;
@@ -467,11 +460,11 @@ void Averages(int iblk) //Print results for current block
         double r = dr * (double)i; 
         gdrNorm = 1. / ( rho * npart * 4. * ( pow(r+dr, 3) - pow(r, 3)));
         gdr_ave[i] = ( gdr_ave[i] / (double)blk_norm ) * gdrNorm;
-        GDR << gdr_ave[i] << " ";
+        GDR << gdr_ave[i] << std::endl;
     }
     GDR << endl;
 
-	 
+
 
 //Potential energy per particle
     Epot << setw(wd) << iblk <<  setw(wd) << stima_pot << setw(wd) << glob_av[iv]/(double)iblk << setw(wd) << err_pot << endl;
