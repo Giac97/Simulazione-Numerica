@@ -348,7 +348,7 @@ void Measure() //Properties measurement
   //press *= 48. / (3. * npart / rho);
   //press += 16. / 3. * M_PI * rho * (2. / 3. * 1. / pow( rcut, 9 ) - 1. / pow( rcut, 3 ) );  
   press = rho*walker[it]+press/(3.0*vol);
-  
+  press += 32. * M_PI * rho * (1. / (9 * (pow(rcut, 9))) - 1. /(6. * pow(rcut, 3)));
   for (int i=0; i<npart; ++i) kin += 0.5 * (vx[i]*vx[i] + vy[i]*vy[i] + vz[i]*vz[i]);
 
   walker[iv] = 4.0 * v; // Potential energy
