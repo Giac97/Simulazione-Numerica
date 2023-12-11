@@ -124,8 +124,9 @@ int main (int argc, char *argv[]){
    int M = 500000;
    int relax = 1000;
    mat points(M + relax, 3, fill::zeros);
-   points(0,0) = 4.;
-   points(0,1) = 4.;
+   points(0,0) = 1.;
+   points(0,1) = 1.;
+   points(0,2) = 1.;
    
    //Read the step from the command line
    double delta = atof(argv[1]);
@@ -216,7 +217,7 @@ int main (int argc, char *argv[]){
 	for (int i = 0; i < N ; i++)
 		rAvg << x(i) << "\t" << sum_prog(i)  << "\t" << err_prog(i) << std::endl;	
     
-   std::cout << "R_avg = "<< x(N) << " +/ " << error(N) std::endl; 
+   std::cout << "R_avg = "<< sum_prog(N-1) << " +/- " << err_prog(N-1) <<std::endl; 
    std::cout << "***************************************" << std::endl;
    rnd.SaveSeed();
    rAvg.close();
