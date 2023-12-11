@@ -172,9 +172,10 @@ int main (int argc, char *argv[]){
     
    double rejRate = double(rej) / double(M);
    std::cout << "***************************************" << std::endl;
+   std::cout << "" << std::endl;
    std::cout << "Rejection rate: " << rejRate * 100 << "%" << std::endl;
-
-	
+   std::cout << "" << std::endl;	
+   std::cout << "***************************************" << std::endl;
 	int N = 100;
 	int L = M / N;
 	
