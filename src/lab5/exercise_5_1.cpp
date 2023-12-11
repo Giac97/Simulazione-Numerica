@@ -175,7 +175,6 @@ int main (int argc, char *argv[]){
    std::cout << "" << std::endl;
    std::cout << "Rejection rate: " << rejRate * 100 << "%" << std::endl;
    std::cout << "" << std::endl;	
-   std::cout << "***************************************" << std::endl;
 	int N = 100;
 	int L = M / N;
 	
@@ -216,7 +215,9 @@ int main (int argc, char *argv[]){
     rAvg.open("rAvg_1s.dat");
 	for (int i = 0; i < N ; i++)
 		rAvg << x(i) << "\t" << sum_prog(i)  << "\t" << err_prog(i) << std::endl;	
-	
+    
+   std::cout << "R_avg = "<< x(N) << " +/ " << error(N) std::endl; 
+   std::cout << "***************************************" << std::endl;
    rnd.SaveSeed();
    rAvg.close();
    return 0;
