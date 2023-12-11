@@ -5,3 +5,7 @@ To compile run "./compile_5-1.sh" this will create an executable named "ex5". Th
 > ex5 0.1
 
 Will run the code with a maximum step size of 0.1
+
+## Wavefunction
+The code can sample positions for the 1s, 2p and 3d orbitals of the hydrogen atom, however, in order to change the orbital it is necessary to change the code and re-compile it.
+The code will output the sampled points and the average radius together with the block average and the error
