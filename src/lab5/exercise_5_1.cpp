@@ -171,7 +171,8 @@ int main (int argc, char *argv[]){
    points.save("psi2_1s.dat", raw_ascii);
     
    double rejRate = double(rej) / double(M);
-   std::cout << rejRate * 100 << std::endl;
+   std::cout << "***************************************" << std::endl;
+   std::cout << "Rejection rate: " << rejRate * 100 << "%" << std::endl;
 
 	
 	int N = 100;
