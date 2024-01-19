@@ -149,8 +149,8 @@ std::vector<int> Population::crossover(const std::vector<int>& parent1, const st
     offspring[0] = parent1[0];
     offspring[offspring.size() - 1] = parent1[offspring.size() - 1];
     // Perform Ordered Crossover (OX)
-    int startPos = static_cast<int>( rnd.Rannyu(0, size));
-    int endPos = static_cast<int>(rnd.Rannyu(0, size));
+    int startPos = static_cast<int>( rnd.Rannyu(0, size-1));
+    int endPos = static_cast<int>(rnd.Rannyu(0, size-1));
 
     if (startPos > endPos) {
         std::swap(startPos, endPos);
@@ -191,7 +191,6 @@ void Population::mutate(std::vector<int>& path) {
         }
 
         //invert between index i and j
-
         if (r < 1 && r > 0.5)
         {
             int j = rand() % (path.size() - 1) + 1;

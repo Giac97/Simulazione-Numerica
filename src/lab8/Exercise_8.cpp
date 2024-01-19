@@ -64,7 +64,8 @@ Returns the value of the potential at x
 */
 double Potential(double x)
 {
-    return ( x * x - 2.5 ) * x * x;
+    return 0.5 * x * x;
+    //return ( x * x - 2.5 ) * x * x;
 }
 
 /**

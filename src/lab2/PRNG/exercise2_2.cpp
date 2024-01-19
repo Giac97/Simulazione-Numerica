@@ -125,6 +125,10 @@ int main(int argc, char *argv[])
             r.row(j + 1) = r.row(j) + mv;
             d2(j + 1) = distance2(r.row(j + 1));
         }
+        if (i == 2)
+        {
+            r.save("rw_discrete_points.dat", raw_ascii);   
+        }
 
         d2_walkers.col(i) = d2;
     }

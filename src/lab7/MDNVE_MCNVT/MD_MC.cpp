@@ -338,7 +338,7 @@ void Measure() //Properties measurement
       }
       if(dr < rcut)
       {
-        vij = 1.0/pow(dr,12) - 1.0/pow(dr,6);
+        vij = 1.00/pow(dr,12) - 1.0/pow(dr,6);
         v += vij;
         press += 48.0/pow(dr,12) - 24.0/pow(dr,6);
       }

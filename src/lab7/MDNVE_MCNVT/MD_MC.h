@@ -20,7 +20,7 @@ Random rnd;
 const int m_props=1000;
 int n_props, n,iv, ik, it, ie, iw, ip, ig;
 double vtail, ptail, bin_size, sd;
-const int nbins = 200;
+const int nbins = 100;
 double walker[m_props], gdr[nbins], gdr_ave[nbins];
 
 

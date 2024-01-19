@@ -208,6 +208,7 @@ void Move(int metro)
 
 double Boltzmann(int sm, int ip)
 {
+  
   double ene = -J * sm * ( s[Pbc(ip-1)] + s[Pbc(ip+1)] ) - h * sm;
   return ene;
 }

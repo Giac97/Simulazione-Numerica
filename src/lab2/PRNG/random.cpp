@@ -69,6 +69,11 @@ double Random :: Lorentz(double Gamma = 1., double mu = 0.)
     double x = Rannyu();
     return Gamma * tan(M_PI * (x - 0.5)) - mu;
 }
+double Random::Cauchy(double c = 1.0, double mu = 0.0)
+{
+   double x = Rannyu();
+   return c * tan(M_PI * (x - 0.5)) + mu;
+}
 
 
 double Random :: Rannyu(double min, double max){

@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
     int N_walkers = 10000;
 
     // Total number of steps
-    int M = 100;
+    int M = 1000;
 
     // Number of blocks
     int N = 100;
@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
             double phi = rnd.Rannyu(0, 2.0 * M_PI);
             // Row vector containg the displacement vector to move from step j to j+1
             rowvec mv(3, fill::zeros);
-            double dist = rnd.Cauchy(1.0, 1.0);
+            double dist = rnd.Cauchy(0.5, 1.0);
             mv = {dist*sin(theta) * cos(phi), dist*sin(theta) * sin(phi), dist*cos(theta)};
             r.row(j + 1) = r.row(j) + mv;
             d2(j + 1) = distance2(r.row(j + 1));
