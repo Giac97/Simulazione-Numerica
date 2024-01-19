@@ -7,7 +7,11 @@ The options for the simulation are given in an input file in which  the followin
 Number of cities: an integer giving the number of cities, must be greater than 2
 Number of generations: How many generations to simulate
 Mutation rate: probability of randomly mutating a path
-City generation: How cities are generated: 1 on a circle, 2 inside a square
+City generation: How cities are generated: 
+- 1 on a circle
+- 2 inside a square
+- 3 American capitals
+- 4 Italian capoluoghi
 Output the best path every N generations
 
 ## Outputs
