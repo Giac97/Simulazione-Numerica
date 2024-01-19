@@ -1,0 +1,182 @@
+Starting the Genetic algorithm for the TSP
+
+<==============================>
+Number of cities: 110
+Number of generations: 1000
+Mutation rate: 40 %
+<==============================>
+
+Starting the Genetic algorithm for the TSP
+
+<==============================>
+Number of cities: 110
+Number of generations: 1000
+Mutation rate: 40 %
+<==============================>
+
+Starting the Genetic algorithm for the TSP
+
+<==============================>
+Number of cities: 110
+Number of generations: 1000
+Mutation rate: 40 %
+<==============================>
+
+Starting the Genetic algorithm for the TSP
+
+<==============================>
+Number of cities: 110
+Number of generations: 1000
+Mutation rate: 40 %
+<==============================>
+
+
+This will take a few minutes...
+
+
+Cities generation started 
+
+
+
+This will take a few minutes...
+
+
+Cities generation started 
+
+
+
+This will take a few minutes...
+
+
+Cities generation started 
+
+
+
+This will take a few minutes...
+
+
+Cities generation started 
+
+
+Cities generated 
+
+Cities generated 
+
+
+
+Cities generated 
+
+
+Cities generated 
+
+
+Initial population generated 
+
+
+Initial population generated 
+
+
+Initial population generated 
+
+
+Initial population generated 
+
+
+
+Migration (giver, receiver): , 0, 2
+
+Migration (giver, receiver): , 0, 1
+
+Migration (giver, receiver): , 1, 2
+
+Migration (giver, receiver): , 3, 0
+
+Migration (giver, receiver): , 0, 2
+
+Migration (giver, receiver): , 3, 2
+
+Migration (giver, receiver): , 1, 3
+
+Migration (giver, receiver): , 0, 3
+
+Migration (giver, receiver): , 1, 3
+
+Migration (giver, receiver): , 3, 0
+
+Migration (giver, receiver): , 2, 0
+
+Migration (giver, receiver): , 3, 1
+
+Migration (giver, receiver): , 0, 2
+
+Migration (giver, receiver): , 0, 1
+
+Migration (giver, receiver): , 3, 1
+
+Migration (giver, receiver): , 1, 2
+
+Migration (giver, receiver): , 1, 3
+
+Migration (giver, receiver): , 1, 3
+
+Migration (giver, receiver): , 0, 1
+
+Migration (giver, receiver): , 0, 3
+
+Migration (giver, receiver): , 2, 0
+
+Migration (giver, receiver): , 2, 0
+
+Migration (giver, receiver): , 0, 2
+
+Migration (giver, receiver): , 3, 0
+
+Migration (giver, receiver): , 0, 1
+
+Migration (giver, receiver): , 3, 2
+
+Migration (giver, receiver): , 3, 2
+
+Migration (giver, receiver): , 1, 0
+
+Migration (giver, receiver): , 1, 0
+
+Migration (giver, receiver): , 0, 1
+
+Migration (giver, receiver): , 3, 2
+
+Migration (giver, receiver): , 1, 3
+
+Migration (giver, receiver): , 2, 0
+
+Migration (giver, receiver): , 0, 1
+
+Migration (giver, receiver): , 0, 2
+
+Migration (giver, receiver): , 3, 2
+
+Migration (giver, receiver): , 0, 1
+
+Migration (giver, receiver): , 0, 2
+
+Migration (giver, receiver): , 0, 2
+
+Migration (giver, receiver): , 0, 1
+
+Migration (giver, receiver): , 3, 2
+
+Migration (giver, receiver): , 1, 3
+
+Migration (giver, receiver): , 0, 3
+
+Migration (giver, receiver): , 3, 0
+
+Migration (giver, receiver): , 3, 1
+
+Migration (giver, receiver): , 3, 1
+
+Migration (giver, receiver): , 0, 3
+Best paths are written to the file: best_paths.txt
+Best paths are written to the file: best_paths.txt
+Best paths are written to the file: best_paths.txt
+Best paths are written to the file: best_paths.txt
