@@ -292,6 +292,8 @@ void Population::writeBestLengthMPI(int rank, const std::vector<City> &cities)
     std::string fname;
     if (CITY_GEN == 4)
         fname = "./out_ita/distance_"+std::to_string(rank)+".out";
+    else if (CITY_GEN == 3)
+        fname = "./out_usa/distance_"+std::to_string(rank)+".out";
     else
         fname = "./out/distance_"+std::to_string(rank)+".out";
     double bestDistance = calculatePathDistance(getBestPath(), cities);
@@ -316,6 +318,8 @@ void Population::writeBestPathMPI(int rank,const std::vector<City> &cities, int 
     std::string fname;
     if (CITY_GEN == 4)
         fname = "./out_ita/path/path_"+std::to_string(rank)+".out";
+    else if (CITY_GEN == 3)
+        fname = "./out_usa/path/path_"+std::to_string(rank)+".out";
     else
         fname = "./out/path/path_"+std::to_string(rank)+".out";
     double bestDistance = calculatePathDistance(getBestPath(), cities);
