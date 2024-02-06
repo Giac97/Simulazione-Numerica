@@ -8,6 +8,6 @@ The code requires an input file, in order the required parameters are:
 - x0: Initial coordinates of the walker
 - mu: The value of $\mu$ (initial value if doing the annealing) 
 - sigma: The value of $\sigma$ (initial value if doing the annealing) 
-- beta: Initial value of $\beta = T^{-1}
+- beta: Initial value of $\beta = T^{-1}$
 - deltaBeta: Increase in the inverse temperature per block
 
