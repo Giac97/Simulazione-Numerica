@@ -64,8 +64,8 @@ Returns the value of the potential at x
 */
 double Potential(double x)
 {
-    return 0.5 * x * x;
-    //return ( x * x - 2.5 ) * x * x;
+   // return 0.5 * x * x;
+    return ( x * x - 2.5 ) * x * x;
 }
 
 /**
@@ -210,6 +210,8 @@ int main()
             std::cout << "Variational step n: " << s << " beta = " << beta << std::endl;
             std::cout << "Energy = " << oldEnergy << " +/- " << errEnergy << std::endl;
             std::cout << "sigma = " << sigma << " mu =  " << mu << std::endl;
+            
+            std::cout << "Acceptance rate = " << (double) accepted / attempted * 100 << " %" << std::endl;
             std::cout << std::endl;
 
             beta += deltaBeta;
