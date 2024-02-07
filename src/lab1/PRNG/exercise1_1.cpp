@@ -64,7 +64,7 @@ int main (int argc, char *argv[]){
 	int N = 100;		//Number of Blocks
 	int L = M / N; 	//Number of throws per block
 	
-rowvec r(M, fill::zeros);
+    rowvec r(M, fill::zeros);
 	rowvec AV1 (N, fill::zeros);
 	rowvec AV2 (N, fill::zeros);
 	for (int i = 0; i<M; i++)
